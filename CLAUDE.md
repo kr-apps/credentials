@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is an **AdonisJS 6** application with **Inertia.js** and **Vue 3** for the frontend, using **PostgreSQL** as the database. The stack includes:
+
 - **Backend**: AdonisJS 6 with TypeScript
 - **Frontend**: Vue 3 with Inertia.js (SSR enabled)
 - **Styling**: Tailwind CSS v4 + shadcn-vue components
@@ -92,6 +93,7 @@ The frontend lives in the `inertia/` directory with SSR enabled:
 Middleware is configured in `start/kernel.ts`:
 
 **Server middleware** (runs on all requests):
+
 1. Container bindings
 2. Static file serving
 3. CORS
@@ -99,12 +101,14 @@ Middleware is configured in `start/kernel.ts`:
 5. Inertia middleware
 
 **Router middleware** (runs on matched routes):
+
 1. Body parser
 2. Session
 3. Shield (CSRF protection)
 4. Auth initialization
 
 **Named middleware** (applied explicitly to routes):
+
 - `auth`: Requires authenticated user
 - `guest`: Requires unauthenticated user
 
@@ -118,12 +122,14 @@ Middleware is configured in `start/kernel.ts`:
 ### Hot Module Replacement
 
 HotHook is configured in `package.json` to reload:
+
 - `app/controllers/**/*.ts`
 - `app/middleware/*.ts`
 
 ## Testing
 
 Tests are organized by suite in `adonisrc.ts`:
+
 - **Unit tests**: `tests/unit/**/*.spec.ts` (2s timeout)
 - **Functional tests**: `tests/functional/**/*.spec.ts` (30s timeout)
 
@@ -139,6 +145,7 @@ Bootstrap configuration: `tests/bootstrap.ts`
 ## Environment Variables
 
 All environment variables are validated in `start/env.ts`. Required variables include:
+
 - `NODE_ENV`, `PORT`, `APP_KEY`, `HOST`, `LOG_LEVEL`
 - `SESSION_DRIVER` (cookie or memory)
 - Database connection variables (see above)

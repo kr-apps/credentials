@@ -2,16 +2,12 @@
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "new-york",
   "typescript": true,
-  "tsx": false,
-  "rsc": false,
   "tailwind": {
     "config": "",
     "css": "inertia/css/app.css",
     "baseColor": "neutral",
-    "cssVariables": true,
-    "version": "v4"
+    "cssVariables": true
   },
-  "framework": "vue",
   "aliases": {
     "components": "~/components",
     "utils": "~/lib/utils",
