@@ -8,13 +8,13 @@ import authSecurityConfig from '#config/auth_security'
 
 export default class EmailVerificationController {
   /**
-   * Show email verification prompt
+   * Show email verification prompt (local auth only)
    */
   async showVerificationPrompt({ inertia, auth }: HttpContext) {
     const user = auth.user!
 
-    // If already verified, redirect to dashboard
-    if (user.isEmailVerified()) {
+    // OAuth users don't need email verification - redirect to dashboard
+    if (auth.authenticatedViaGuard === 'logto' || user.isEmailVerified() || !user) {
       return inertia.location('/dashboard')
     }
 
@@ -71,10 +71,16 @@ export default class EmailVerificationController {
   }
 
   /**
-   * Resend verification email
+   * Resend verification email (local auth only)
    */
   async resend({ response, session, auth }: HttpContext) {
     const user = auth.user!
+
+    // OAuth users don't need email verification
+    if (auth.authenticatedViaGuard === 'logto' || !user) {
+      session.flash('info', 'Email verification not required')
+      return response.redirect('/dashboard')
+    }
 
     // Check if already verified
     if (user.isEmailVerified()) {

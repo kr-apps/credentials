@@ -21,7 +21,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const EmailVerificationController = () => import('#controllers/email_verification_controller')
 
 // Home page (public)
-router.on('/').renderInertia('home')
+router.on('/').renderInertia('home').middleware([middleware.auth()])
 
 // Guest routes (unauthenticated users only)
 router
@@ -45,8 +45,8 @@ router
 // Email verification routes (authenticated users)
 router
   .group(() => {
-    router.get('/email/verify', [EmailVerificationController, 'showVerificationPrompt'])
     router.get('/email/verify/:token', [EmailVerificationController, 'verify'])
+    router.get('/email/verify', [EmailVerificationController, 'showVerificationPrompt'])
     router
       .post('/email/resend', [EmailVerificationController, 'resend'])
       .use(resendVerificationThrottle)
@@ -64,3 +64,6 @@ router
     })
   })
   .middleware([middleware.auth(), middleware.verifyEmail()])
+
+// OAuth callback route (used when AUTH_STRATEGY=logto)
+router.get('/auth/callback', [AuthController, 'handleOAuthCallback'])

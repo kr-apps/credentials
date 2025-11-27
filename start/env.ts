@@ -53,7 +53,23 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for application URL
   |----------------------------------------------------------
   */
-  APP_URL: Env.schema.string({ format: 'url' }),
+  APP_URL: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring authentication strategy
+  |----------------------------------------------------------
+  */
+  AUTH_STRATEGY: Env.schema.enum(['local', 'logto'] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring Logto OAuth (only if AUTH_STRATEGY=logto)
+  |----------------------------------------------------------
+  */
+  LOGTO_ENDPOINT: Env.schema.string.optional({ format: 'url' }),
+  LOGTO_APP_ID: Env.schema.string.optional(),
+  LOGTO_APP_SECRET: Env.schema.string.optional(),
 
   /*
   |----------------------------------------------------------

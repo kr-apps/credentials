@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import type { Authenticators } from '@adonisjs/auth/types'
+import User from '#models/user'
 import AuthService from '#services/auth_service'
 import authSecurityConfig from '#config/auth_security'
 
@@ -21,22 +22,22 @@ export default class AuthMiddleware {
       guards?: (keyof Authenticators)[]
     } = {}
   ) {
-    const { session } = ctx
+    const { session, auth } = ctx
 
     // Authenticate the user
-    await ctx.auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
+    await auth.authenticateUsing(options.guards, { loginRoute: this.redirectTo })
 
-    // Check if the user's account is locked
-    const user = ctx.auth.user
-    if (user) {
+    // Check if the user's account is locked (only for 'web' guard with User model)
+    // OAuth users (logto guard) don't have account lockout, they're authenticated by provider
+    if (auth.authenticatedViaGuard === 'web' && auth.user instanceof User) {
       const { isLocked, reason } = await AuthService.checkAccountStatus(
-        user,
+        auth.user,
         authSecurityConfig.lockoutDuration
       )
 
       if (isLocked) {
         // Account is locked, log out and redirect
-        await ctx.auth.use('web').logout()
+        await auth.use('web').logout()
         session.flash('error', reason || 'Account is locked')
         return ctx.response.redirect(this.redirectTo)
       }

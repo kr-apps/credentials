@@ -13,13 +13,13 @@ export default class TokenService {
    * Hash a token for secure storage
    */
   static async hashToken(token: string): Promise<string> {
-    return hash.use('scrypt').make(token)
+    return hash.make(token)
   }
 
   /**
    * Verify a plain token against a hashed token
    */
-  static async verifyToken(plainToken: string, hashedToken: string): Promise<boolean> {
-    return hash.use('scrypt').verify(hashedToken, plainToken)
+  static async verifyToken(hashedToken: string, plainToken: string): Promise<boolean> {
+    return hash.verify(hashedToken, plainToken)
   }
 }
