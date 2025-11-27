@@ -1,0 +1,41 @@
+# Ignorar node_modules (se instalarán en el contenedor)
+node_modules
+
+# Ignorar build anterior
+build
+
+# Ignorar archivos de desarrollo
+.env
+.env.test
+.env.local
+
+# Ignorar archivos de git
+.git
+.gitignore
+
+# Ignorar archivos de testing
+coverage
+.nyc_output
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar logs
+*.log
+logs
+
+# Ignorar archivos temporales
+tmp
+temp
+*.tmp
+
+# Ignorar documentación de desarrollo
+README.md
+CLAUDE.md
+
+# Ignorar archivos de IDE
+.vscode
+.idea
+*.swp
+*.swo
