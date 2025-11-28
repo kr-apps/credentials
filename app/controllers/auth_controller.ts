@@ -149,10 +149,24 @@ export default class AuthController {
     const client = buildLogtoClient(ctx)
 
     try {
-      await client.handleSignInCallback(request.completeUrl(true))
+      const callbackUrl = request.completeUrl(true)
+
+      // TEMPORAL: Logging para debugging
+      console.log('=== LOGTO CALLBACK DEBUG ===')
+      console.log('Callback URL received:', callbackUrl)
+      console.log('Expected redirect URI:', logtoRuntimeConfig.redirectUri)
+      console.log('APP_URL env var:', env.get('APP_URL'))
+      console.log('============================')
+
+      await client.handleSignInCallback(callbackUrl)
+
+      // Verificar autenticación
+      const isAuthenticated = await client.isAuthenticated()
+      if (!isAuthenticated) {
+        throw new Error('Not authenticated after callback')
+      }
 
       const claims = await client.getIdTokenClaims()
-      console.log(claims)
       const email = claims.email ?? claims.username ?? claims.sub
       const randomPasswordHash = await hash.make(crypto.randomBytes(32).toString('hex'))
 
@@ -176,6 +190,9 @@ export default class AuthController {
         await user.save()
       }
 
+      // CRÍTICO: Guardar sesión explícitamente
+      await session.commit()
+
       return response.redirect('/dashboard')
     } catch (error) {
       session.clear()
@@ -184,7 +201,7 @@ export default class AuthController {
 
       // Mensaje claro para el usuario
       session.flash('error', 'Failed to create your account. Please try again or contact support.')
-      return response.redirect('/login')
+      return response.redirect('/')
     }
   }
 

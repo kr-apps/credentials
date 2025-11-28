@@ -35,17 +35,5 @@ RUN npm ci --omit=dev
 # Copiar el build generado desde el stage anterior
 COPY --from=builder /app/build ./
 
-# Crear script de inicio que ejecuta migraciones y luego inicia la app
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'set -e' >> /app/start.sh && \
-    echo 'echo "Running database migrations..."' >> /app/start.sh && \
-    echo 'node ace migration:run --force' >> /app/start.sh && \
-    echo 'echo "Migrations completed. Starting server..."' >> /app/start.sh && \
-    echo 'node bin/server.js' >> /app/start.sh && \
-    chmod +x /app/start.sh
-
-# Exponer puerto (Railway asigna dinámicamente el PORT)
-EXPOSE 3333
-
 # Comando de inicio
-CMD ["/app/start.sh"]
+CMD ["sh", "-c", "node ace migration:run --force && node bin/server.js"]
