@@ -40,11 +40,11 @@ const inertiaConfig = defineConfig({
           permissions: permissions.map((permission) => permission.slug),
         }
       }),
-    errors: (ctx) => ctx.session.flashMessages.get('errors'),
-    success: (ctx) => ctx.session.flashMessages.get('success'),
-    error: (ctx) => ctx.session.flashMessages.get('error'),
-    info: (ctx) => ctx.session.flashMessages.get('info'),
-    warning: (ctx) => ctx.session.flashMessages.get('warning'),
+    errors: (ctx) => ctx.session?.flashMessages.get('errors'),
+    success: (ctx) => ctx.session?.flashMessages.get('success'),
+    error: (ctx) => ctx.session?.flashMessages.get('error'),
+    info: (ctx) => ctx.session?.flashMessages.get('info'),
+    warning: (ctx) => ctx.session?.flashMessages.get('warning'),
   },
 
   /**
