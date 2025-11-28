@@ -9,6 +9,10 @@ export default class extends BaseSchema {
       table.string('full_name').nullable()
       table.string('email', 254).notNullable().unique()
       table.string('password').notNullable()
+      table.timestamp('email_verified_at').nullable()
+      table.boolean('is_locked').defaultTo(false).notNullable()
+      table.integer('failed_login_attempts').defaultTo(0).notNullable()
+      table.timestamp('locked_at').nullable()
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
