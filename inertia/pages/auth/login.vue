@@ -60,7 +60,11 @@ const submit = () => {
 
       <!-- Remember Me -->
       <div class="flex items-center space-x-2">
-        <Checkbox id="remember" :checked="form.remember" @update:checked="form.remember = $event" />
+        <Checkbox
+          id="remember"
+          :model-value="form.remember"
+          @update:modelValue="form.remember = $event"
+        />
         <Label for="remember" class="text-sm font-normal cursor-pointer"> Remember me </Label>
       </div>
 

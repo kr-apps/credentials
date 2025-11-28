@@ -19,6 +19,8 @@ import {
 
 const AuthController = () => import('#controllers/auth_controller')
 const EmailVerificationController = () => import('#controllers/email_verification_controller')
+const AdminUsersController = () => import('#controllers/admin/users_controller')
+const AdminRolesController = () => import('#controllers/admin/roles_controller')
 
 // Home page (public)
 router.on('/').renderInertia('home').middleware([middleware.auth()])
@@ -67,3 +69,24 @@ router
 
 // OAuth callback route (used when AUTH_STRATEGY=logto)
 router.get('/auth/callback', [AuthController, 'handleOAuthCallback'])
+
+// Admin routes (only for users with the admin role)
+router
+  .group(() => {
+    // Dashboard
+    router.get('/dashboard', ({ inertia }) => {
+      return inertia.render('admin/dashboard')
+    })
+
+    // User management
+    router.get('/users', [AdminUsersController, 'index'])
+    router.get('/users/:id/edit', [AdminUsersController, 'edit'])
+    router.post('/users/:id/roles', [AdminUsersController, 'assignRoles'])
+
+    // Role management
+    router.get('/roles', [AdminRolesController, 'index'])
+    router.get('/roles/:id/edit', [AdminRolesController, 'edit'])
+    router.put('/roles/:id/permissions', [AdminRolesController, 'updatePermissions'])
+  })
+  .prefix('/admin')
+  .middleware([middleware.auth(), middleware.verifyEmail(), middleware.role({ roles: ['admin'] })])
