@@ -150,14 +150,6 @@ export default class AuthController {
 
     try {
       const callbackUrl = request.completeUrl(true)
-
-      // TEMPORAL: Logging para debugging
-      console.log('=== LOGTO CALLBACK DEBUG ===')
-      console.log('Callback URL received:', callbackUrl)
-      console.log('Expected redirect URI:', logtoRuntimeConfig.redirectUri)
-      console.log('APP_URL env var:', env.get('APP_URL'))
-      console.log('============================')
-
       await client.handleSignInCallback(callbackUrl)
 
       // Verificar autenticación

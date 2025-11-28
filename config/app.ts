@@ -26,6 +26,12 @@ export const http = defineConfig({
   useAsyncLocalStorage: false,
 
   /**
+   * Trust proxy headers (X-Forwarded-Proto, X-Forwarded-Host, etc.)
+   * This is required when running behind a reverse proxy like Railway, Heroku, or Nginx.
+   */
+  trustProxy: app.inProduction,
+
+  /**
    * Manage cookies configuration. The settings for the session id cookie are
    * defined inside the "config/session.ts" file.
    */
