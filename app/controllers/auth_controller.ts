@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import crypto from 'node:crypto'
 import hash from '@adonisjs/core/services/hash'
 import User from '#models/user'
+import Role from '#models/role'
 import PasswordResetToken from '#models/password_reset_token'
 import EmailVerificationToken from '#models/email_verification_token'
 import {
@@ -42,6 +43,10 @@ export default class AuthController {
       email: data.email,
       password: data.password,
     })
+
+    // Assign default 'holder' role to new user
+    const holderRole = await Role.findByOrFail('slug', 'holder')
+    await user.related('roles').attach([holderRole.id])
 
     // Generate email verification token
     const { token } = await EmailVerificationToken.generateFor(
@@ -170,6 +175,13 @@ export default class AuthController {
           emailVerifiedAt: DateTime.now(),
         }
       )
+
+      // Assign default 'holder' role to new users only
+      await user.load('roles')
+      if (user.roles.length === 0) {
+        const holderRole = await Role.findByOrFail('slug', 'holder')
+        await user.related('roles').attach([holderRole.id])
+      }
 
       // Update user info if needed
       if (!user.fullName && claims.name) {
