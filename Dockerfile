@@ -1,39 +1,36 @@
-# Stage 1: Build
+# Builder stage
 FROM node:20-alpine AS builder
-
-# Instalar dependencias del sistema necesarias para compilar paquetes nativos (argon2, pg, etc)
-RUN apk add --no-cache python3 make g++
-
+# Add build dependencies as a virtual package that we can easily remove later
+RUN apk add --no-cache --virtual .build-deps python3 make g++
 WORKDIR /app
-
-# Copiar archivos de dependencias
 COPY package*.json ./
-
-# Instalar TODAS las dependencias (incluidas devDependencies para el build)
 RUN npm ci
-
-# Copiar todo el código fuente
 COPY . .
+# Build the app, then remove development dependencies, clean cache,
+# and remove the build tools, all in a single layer to optimize size.
+RUN npm run build \
+ && npm prune --omit=dev \
+ && npm cache clean --force \
+ && apk del .build-deps
 
-# Ejecutar build (compila TypeScript, genera Vite bundles, etc)
-RUN npm run build
-
-# Stage 2: Production
+# Runtime stage
 FROM node:20-alpine
-
-# Instalar dependencias del sistema para runtime (argon2, pg)
-RUN apk add --no-cache python3 make g++
-
+ENV NODE_ENV=production
 WORKDIR /app
 
-# Copiar archivos de dependencias
-COPY package*.json ./
+# Create a non-root user and group for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Instalar solo dependencias de producción
-RUN npm ci --omit=dev
+# Copy artifacts from the builder stage, setting ownership at the same time
+COPY --from=builder /app/package*.json ./
+COPY --from=builder --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=builder --chown=appuser:appgroup /app/build ./
 
-# Copiar el build generado desde el stage anterior
-COPY --from=builder /app/build ./
+# Switch to the non-root user
+USER appuser
 
-# Comando de inicio
+# Expose the port the app runs on
+EXPOSE 3333
+
+# The command to run the application
 CMD ["sh", "-c", "node ace migration:run --force && node bin/server.js"]
